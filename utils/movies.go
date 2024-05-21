@@ -9,5 +9,3 @@ type Movie struct {
 type SearchResult struct {
 	Search []Movie `json:"Search"`
 }
-
-const apiKey = "1b8a3f2d"

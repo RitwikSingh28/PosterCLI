@@ -1,8 +1,20 @@
 package utils
 
-import "net/url"
+import (
+	"fmt"
+	"net/url"
+	"os"
 
-func ParseMovieTitle(title []string) string {
+	"github.com/joho/godotenv"
+)
+
+func ParseMovieTitle(title []string) (string, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		return "", fmt.Errorf("couldn't load the API Key: %v", err)
+	}
+	apiKey := os.Getenv("API_KEY")
+
 	movieTitle := ""
 	for _, partTitle := range title {
 		movieTitle += partTitle + " "
@@ -10,5 +22,5 @@ func ParseMovieTitle(title []string) string {
 	movieTitle = movieTitle[:len(movieTitle)-1]
 	encodedTitle := url.QueryEscape(movieTitle)
 	url := "http://www.omdbapi.com/?s=" + encodedTitle + "&apikey=" + apiKey
-	return url
+	return url, nil
 }

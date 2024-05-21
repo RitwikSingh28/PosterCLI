@@ -13,7 +13,11 @@ func main() {
 		return
 	}
 
-	title := utils.ParseMovieTitle(os.Args[1:])
+	title, err := utils.ParseMovieTitle(os.Args[1:])
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	poster, err := utils.FetchMovieData(title)
 	if err != nil {
 		log.Fatal(err)
