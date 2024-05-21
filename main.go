@@ -1,3 +1,4 @@
+// Todo: make it modular, and robust
 package main
 
 import (
@@ -6,14 +7,21 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 )
 
 func main() {
 	title := os.Args[1:]
-	url := "http://www.omdbapi.com/?s=" + title[0] + "&apikey=1b8a3f2d"
+	movieTitle := ""
+	for _, partTitle := range title {
+		movieTitle += partTitle + " "
+	}
+	movieTitle = movieTitle[:len(movieTitle)-1]
+	encodedTitle := url.QueryEscape(movieTitle)
+	url := "http://www.omdbapi.com/?s=" + encodedTitle + "&apikey=1b8a3f2d"
 
-	fmt.Printf("%s\n", url)
+	fmt.Println("Fetching Data....")
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
@@ -29,6 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	fmt.Fprint(os.Stdin, "")
 	type SearchResult struct {
 		Search []struct {
 			Title  string `json:"Title"`
@@ -43,6 +52,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if len(poster.Search) == 0 {
+		log.Fatal("No records found")
+		return
+	}
+
+	fmt.Println("Record Found.....")
+	fmt.Println("Downloading Image.....")
 	imgUrl := poster.Search[0].Poster
 	movTitle := poster.Search[0].Title
 	resp, err = http.Get(imgUrl)
